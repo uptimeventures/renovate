@@ -149,6 +149,15 @@ The main name/text that Renovate should use when creating a branch on your repos
 
 This field is combined with `branchPrefix` and `managerBranchPrefix` to form the full `branchName`. `branchName` uniqueness is important for dependency update grouping or non-grouping so be cautious about ever editing this field manually.
 
+## buildkite
+
+Configuration specific for buildkite plugins updates.
+
+| name    | value                                                 |
+| ------- | ----------------------------------------------------- |
+| type    | object                                                |
+| default | { enabled: false, managerBranchPrefix: 'buildkite-' } |
+
 ## cargo
 
 Configuration specific for Cargo (Rust) crates.
@@ -835,6 +844,17 @@ Note how the above uses `packageNames` instead of `packagePatterns` because it i
 
 The above rule will group together the `neutrino` package and any package matching `@neutrino/*`.
 
+Path rules are convenient to use if you wish to apply configuration rules to certain package files without needing to configure them all in the `packageFiles` array. For example, if you have an `examples` directory and you want all updates to those examples to use the `chore` prefix instead of `fix`, then you could add this configuration:
+
+```json
+  "packageRules": [
+    {
+      "paths": ["examples/**"],
+      "extends": [":semanticCommitTypeAll(chore)"]
+    }
+  ]
+```
+
 ## patch
 
 Configuration specific for patch dependency updates.
@@ -846,29 +866,9 @@ Configuration specific for patch dependency updates.
 
 Add to this object if you wish to define rules that apply only to patch updates. See also `major` and `minor` configuration options.
 
-## pathRules
-
-Apply config on a path-based basis. Consists of a `paths` array plus whatever other configuration objects to apply.
-
-| name    | value |
-| ------- | ----- |
-| type    | list  |
-| default | []    |
-
-Path rules are convenient to use if you wish to apply configuration rules to certain package files without needing to configure them all in the `packageFiles` array. For example, if you have an `examples` directory and you want all updates to those examples to use the `chore` prefix instead of `fix`, then you could add this configuration:
-
-```json
-  "pathRules": [
-    {
-      "paths": ["examples/**"],
-      "extends": [":semanticCommitTypeAll(chore)"]
-    }
-  ]
-```
-
 ## paths
 
-List of strings or glob patterns to match against package files. Applicable inside pathRules only.
+List of strings or glob patterns to match against package files. Applicable inside packageRules only.
 
 | name    | value |
 | ------- | ----- |
@@ -916,6 +916,15 @@ Whether to convert ranged versions in `package.json` to pinned versions.
 | default | false   |
 
 This is a very important feature to consider, because not every repository's requirements are the same. The default value within the tool itself is false, which means no existing ranges are pinned. However if you are using the suggested preset `"config:base"`, then it changes the default of pinVersions to `null`, which means Renovate attempts to autodetect what's best for the project. In such cases `devDependencies` in `package.json` will alway be pinned, but `dependencies` will only be pinned if the package is `private` or has no `main` entry defined - both indicators that it is not intended to be published and consumed by other packages. To override the `"config:base"` setting, add the preset `":preserveSemverRanges"` to your `extends` array.
+
+## pip_requirements
+
+Configuration specific for requirements.txt updates.
+
+| name    | value              |
+| ------- | ------------------ |
+| type    | object             |
+| default | { enabled: false } |
 
 ## prBody
 
@@ -995,6 +1004,15 @@ Pull Request title template
 | default | {% raw %}{{semanticPrefix}}{{#if isPin}}Pin{{else}}Update{{/if}} dependency {{depName}} to version {{#if isRange}}{{newVersion}}{{else}}{{#if isMajor}}{{newVersionMajor}}.x{{else}}{{newVersion}}{{/if}}{{/if}}{% endraw %} |
 
 The PR title is important for some of Renovate's matching algorithms (e.g. determining whether to recreate a PR or not) so ideally don't modify it much.
+
+## python
+
+Configuration specific for python updates.
+
+| name    | value             |
+| ------- | ----------------- |
+| type    | object            |
+| default | { enabled: true } |
 
 ## rebaseStalePrs
 
